@@ -1,0 +1,1348 @@
+/* ==========================================================
+   SPIN2WIN
+   STYLE.CSS
+   PART 1
+   FULLSCREEN LAYOUT
+========================================================== */
+
+/* ==========================================================
+   ROOT
+========================================================== */
+
+:root{
+
+    --primary:#ef3e42;
+    --primary-dark:#c62828;
+
+    --secondary:#f6b100;
+
+    --white:#ffffff;
+
+    --text:#2b2b2b;
+
+    --shadow:
+
+        0 15px 40px rgba(0,0,0,.18);
+
+}
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+html,
+
+/* ==========================================================
+   BODY
+========================================================== */
+
+body{
+
+    width:100vw;
+    height:100vh;
+
+    overflow:hidden;
+
+    font-family:"Poppins",sans-serif;
+
+    position:relative;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background-image:url("../assets/images/logo/logo.png");
+
+    background-repeat:no-repeat;
+
+    background-position:center center;
+
+    background-size:cover;
+
+    background-attachment:fixed;
+
+}
+
+/* ==========================================================
+   SOFT LIGHT
+========================================================== */
+
+body::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        radial-gradient(
+
+            circle,
+
+            rgba(255,210,0,.15),
+
+            transparent 70%
+
+        );
+
+    pointer-events:none;
+
+}
+
+/* ==========================================================
+   APP
+========================================================== */
+
+.app{
+
+    width:100vw;
+
+    height:100vh;
+
+    display:grid;
+
+    grid-template-rows:
+
+        90px
+
+        1fr
+
+        120px
+
+        40px;
+
+    justify-items:center;
+
+    align-items:center;
+
+    position:relative;
+
+    z-index:2;
+
+}
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.header{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.logo{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.logo img{
+
+    height:70px;
+
+    width:auto;
+
+}
+
+/* ==========================================================
+   WHEEL SECTION
+========================================================== */
+
+.wheel-section{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    position:relative;
+
+}
+
+/* ==========================================================
+   POINTER
+========================================================== */
+
+.pointer{
+
+    position:absolute;
+
+    top:-10px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    font-size:70px;
+
+    color:var(--primary);
+
+    z-index:500;
+
+    filter:
+
+        drop-shadow(
+
+            0 6px 10px rgba(0,0,0,.25)
+
+        );
+
+}
+
+/* ==========================================================
+   WHEEL WRAPPER
+========================================================== */
+
+.wheel-wrapper{
+
+    width:min(72vh,72vw);
+
+    height:min(72vh,72vw);
+
+    border-radius:50%;
+
+    background:#fff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    position:relative;
+
+    box-shadow:
+
+        0 20px 50px rgba(0,0,0,.18);
+
+}
+
+/* ==========================================================
+   CANVAS
+========================================================== */
+
+#wheelCanvas{
+
+    width:100%;
+
+    height:100%;
+
+    border-radius:50%;
+
+    display:block;
+
+}
+
+/* ==========================================================
+   CENTER HUB
+========================================================== */
+
+.wheel-wrapper::after{
+
+    content:"";
+
+    width:90px;
+
+    height:90px;
+
+    border-radius:50%;
+
+    background:
+
+        linear-gradient(
+
+            145deg,
+
+            #fff8d8,
+
+            #ffd54f
+
+        );
+
+    border:8px solid var(--primary);
+
+    position:absolute;
+
+}
+
+/* ==========================================================
+   CONTROLS
+========================================================== */
+
+.controls{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+/* ==========================================================
+   BUTTON
+========================================================== */
+
+#spinBtn{
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:20px 70px;
+
+    font-size:24px;
+
+    font-weight:700;
+
+    border-radius:50px;
+
+    color:#fff;
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            var(--primary),
+
+            var(--primary-dark)
+
+        );
+
+    box-shadow:
+
+        0 10px 30px rgba(239,62,66,.35);
+
+    transition:.25s;
+
+}
+
+#spinBtn:hover{
+
+    transform:
+
+        translateY(-3px);
+
+}
+
+#spinBtn:active{
+
+    transform:scale(.97);
+
+}
+
+#spinBtn:disabled{
+
+    opacity:.55;
+
+    cursor:not-allowed;
+
+}
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+footer{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    width:100%;
+
+    font-size:14px;
+
+    color:#666;
+
+}
+
+/* ==========================================================
+   LOADING SCREEN
+========================================================== */
+
+#loading-screen{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#ffffff;
+
+    z-index:99999;
+
+    transition:.35s;
+
+}
+
+.loader{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:50%;
+
+    border:8px solid #ececec;
+
+    border-top:8px solid var(--primary);
+
+    animation:loaderSpin .8s linear infinite;
+
+}
+
+#loading-screen h2{
+
+    margin-top:25px;
+
+    font-size:20px;
+
+    color:#333;
+
+}
+
+@keyframes loaderSpin{
+
+    from{
+
+        transform:rotate(0deg);
+
+    }
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================================================
+   PART 2
+   WHEEL EFFECTS
+   BUTTON
+   POPUP
+========================================================== */
+
+/* ==========================================================
+   WHEEL GLOW
+========================================================== */
+
+.wheel-wrapper::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-18px;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+
+            circle,
+
+            rgba(255,193,7,.35),
+
+            rgba(255,193,7,.05),
+
+            transparent 75%
+
+        );
+
+    z-index:-1;
+
+    animation:wheelGlow 3s ease-in-out infinite;
+
+}
+
+@keyframes wheelGlow{
+
+    0%{
+
+        transform:scale(.98);
+
+        opacity:.6;
+
+    }
+
+    50%{
+
+        transform:scale(1.04);
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        transform:scale(.98);
+
+        opacity:.6;
+
+    }
+
+}
+
+/* ==========================================================
+   WHEEL RING
+========================================================== */
+
+.wheel-wrapper{
+
+    border:10px solid #ffffff;
+
+    overflow:hidden;
+
+}
+
+.wheel-wrapper canvas{
+
+    display:block;
+
+}
+
+/* ==========================================================
+   POINTER
+========================================================== */
+
+.pointer{
+
+    animation:pointerFloat 1.5s ease-in-out infinite;
+
+}
+
+@keyframes pointerFloat{
+
+    0%{
+
+        transform:
+
+            translateX(-50%)
+
+            translateY(0);
+
+    }
+
+    50%{
+
+        transform:
+
+            translateX(-50%)
+
+            translateY(-5px);
+
+    }
+
+    100%{
+
+        transform:
+
+            translateX(-50%)
+
+            translateY(0);
+
+    }
+
+}
+
+/* ==========================================================
+   BUTTON
+========================================================== */
+
+#spinBtn{
+
+    min-width:260px;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
+
+    animation:buttonPulse 2s infinite;
+
+}
+
+@keyframes buttonPulse{
+
+    0%{
+
+        box-shadow:
+
+            0 0 0 rgba(239,62,66,.45),
+
+            0 12px 30px rgba(239,62,66,.35);
+
+    }
+
+    50%{
+
+        box-shadow:
+
+            0 0 25px rgba(239,62,66,.55),
+
+            0 18px 35px rgba(239,62,66,.40);
+
+    }
+
+    100%{
+
+        box-shadow:
+
+            0 0 0 rgba(239,62,66,.45),
+
+            0 12px 30px rgba(239,62,66,.35);
+
+    }
+
+}
+
+#spinBtn:hover{
+
+    transform:
+
+        translateY(-4px)
+
+        scale(1.04);
+
+}
+
+#spinBtn:active{
+
+    transform:scale(.97);
+
+}
+
+#spinBtn:disabled{
+
+    animation:none;
+
+}
+
+/* ==========================================================
+   POPUP OVERLAY
+========================================================== */
+
+.popup-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(0,0,0,.55);
+
+    backdrop-filter:blur(10px);
+
+    z-index:99999;
+
+    transition:.35s;
+
+}
+
+.popup-overlay.hidden{
+
+    opacity:0;
+
+    visibility:hidden;
+
+    pointer-events:none;
+
+}
+
+/* ==========================================================
+   POPUP CARD
+========================================================== */
+
+.popup-card{
+
+    width:430px;
+
+    max-width:92%;
+
+    background:#ffffff;
+
+    border-radius:28px;
+
+    padding:45px;
+
+    text-align:center;
+
+    box-shadow:
+
+        0 25px 60px rgba(0,0,0,.25);
+
+    animation:popupOpen .35s ease;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.popup-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-120px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:260px;
+
+    height:260px;
+
+    border-radius:50%;
+
+    background:
+
+        radial-gradient(
+
+            circle,
+
+            rgba(255,193,7,.25),
+
+            transparent
+
+        );
+
+}
+
+.popup-icon{
+
+    width:95px;
+
+    height:95px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:50px;
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            var(--primary),
+
+            var(--secondary)
+
+        );
+
+    color:#fff;
+
+    margin-bottom:20px;
+
+}
+
+.popup-card h2{
+
+    color:var(--primary);
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
+}
+
+.popup-card p{
+
+    font-size:17px;
+
+    color:#666;
+
+}
+
+#winnerName{
+
+    margin:20px 0;
+
+    font-size:38px;
+
+    color:var(--secondary);
+
+    font-weight:700;
+
+}
+
+.popup-buttons{
+
+    margin-top:30px;
+
+}
+
+.popup-buttons button{
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:16px 50px;
+
+    border-radius:40px;
+
+    color:#fff;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            var(--primary),
+
+            var(--primary-dark)
+
+        );
+
+    transition:.3s;
+
+}
+
+.popup-buttons button:hover{
+
+    transform:
+
+        translateY(-3px);
+
+}
+
+/* ==========================================================
+   POPUP ANIMATION
+========================================================== */
+
+@keyframes popupOpen{
+
+    from{
+
+        opacity:0;
+
+        transform:
+
+            translateY(20px)
+
+            scale(.85);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+
+            translateY(0)
+
+            scale(1);
+
+    }
+
+}
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+footer{
+
+    border-top:1px solid rgba(0,0,0,.08);
+
+    background:rgba(255,255,255,.45);
+
+    backdrop-filter:blur(10px);
+
+}
+
+
+
+
+
+/* ==========================================================
+   PART 3
+   RESPONSIVE
+   FINAL POLISH
+========================================================== */
+
+/* ==========================================================
+   GENERAL IMPROVEMENTS
+========================================================== */
+
+img{
+
+    user-select:none;
+
+    -webkit-user-drag:none;
+
+}
+
+canvas{
+
+    display:block;
+
+    max-width:100%;
+
+    max-height:100%;
+
+}
+
+button{
+
+    font-family:"Poppins",sans-serif;
+
+}
+
+button,
+.logo img,
+.wheel-wrapper,
+.popup-card{
+
+    transition:.3s ease;
+
+}
+
+/* ==========================================================
+   DESKTOP
+========================================================== */
+
+@media (max-width:1400px){
+
+    .wheel-wrapper{
+
+        width:min(68vh,68vw);
+
+        height:min(68vh,68vw);
+
+    }
+
+}
+
+/* ==========================================================
+   LAPTOP
+========================================================== */
+
+@media (max-width:1200px){
+
+    .app{
+
+        grid-template-rows:
+
+            80px
+
+            1fr
+
+            100px
+
+            35px;
+
+    }
+
+    .logo img{
+
+        height:60px;
+
+    }
+
+    .wheel-wrapper{
+
+        width:min(64vh,64vw);
+
+        height:min(64vh,64vw);
+
+    }
+
+    .pointer{
+
+        font-size:60px;
+
+    }
+
+    #spinBtn{
+
+        font-size:20px;
+
+        padding:18px 60px;
+
+    }
+
+}
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width:992px){
+
+    .wheel-wrapper{
+
+        width:min(58vh,80vw);
+
+        height:min(58vh,80vw);
+
+    }
+
+    .pointer{
+
+        font-size:55px;
+
+    }
+
+    .logo img{
+
+        height:55px;
+
+    }
+
+    #spinBtn{
+
+        width:280px;
+
+        font-size:19px;
+
+    }
+
+}
+
+/* ==========================================================
+   SMALL TABLET
+========================================================== */
+
+@media (max-width:768px){
+
+    .app{
+
+        grid-template-rows:
+
+            70px
+
+            1fr
+
+            90px
+
+            35px;
+
+    }
+
+    .wheel-wrapper{
+
+        width:min(52vh,88vw);
+
+        height:min(52vh,88vw);
+
+    }
+
+    .pointer{
+
+        font-size:48px;
+
+    }
+
+    .logo img{
+
+        height:48px;
+
+    }
+
+    #spinBtn{
+
+        width:260px;
+
+        font-size:18px;
+
+        padding:16px;
+
+    }
+
+    footer{
+
+        font-size:13px;
+
+    }
+
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width:576px){
+
+    body{
+
+        overflow:hidden;
+
+    }
+
+    .wheel-wrapper{
+
+        width:88vw;
+
+        height:88vw;
+
+    }
+
+    .pointer{
+
+        font-size:42px;
+
+    }
+
+    .logo img{
+
+        height:42px;
+
+    }
+
+    #spinBtn{
+
+        width:90vw;
+
+        max-width:260px;
+
+        font-size:17px;
+
+    }
+
+    .popup-card{
+
+        width:92%;
+
+        padding:30px 25px;
+
+    }
+
+    .popup-icon{
+
+        width:80px;
+
+        height:80px;
+
+        font-size:40px;
+
+    }
+
+    .popup-card h2{
+
+        font-size:26px;
+
+    }
+
+    #winnerName{
+
+        font-size:28px;
+
+    }
+
+}
+
+/* ==========================================================
+   VERY SMALL PHONES
+========================================================== */
+
+@media (max-width:380px){
+
+    .wheel-wrapper{
+
+        width:82vw;
+
+        height:82vw;
+
+    }
+
+    .pointer{
+
+        font-size:34px;
+
+    }
+
+    .logo img{
+
+        height:36px;
+
+    }
+
+    #spinBtn{
+
+        width:230px;
+
+        font-size:16px;
+
+    }
+
+    footer{
+
+        font-size:12px;
+
+    }
+
+}
+
+/* ==========================================================
+   SHORT SCREENS
+========================================================== */
+
+@media (max-height:700px){
+
+    .wheel-wrapper{
+
+        width:min(55vh,65vw);
+
+        height:min(55vh,65vw);
+
+    }
+
+    .logo img{
+
+        height:48px;
+
+    }
+
+    .pointer{
+
+        font-size:46px;
+
+    }
+
+    #spinBtn{
+
+        padding:16px 50px;
+
+    }
+
+}
+
+/* ==========================================================
+   LARGE DISPLAYS
+========================================================== */
+
+@media (min-width:1700px){
+
+    .wheel-wrapper{
+
+        width:min(75vh,70vw);
+
+        height:min(75vh,70vw);
+
+    }
+
+    .logo img{
+
+        height:85px;
+
+    }
+
+    #spinBtn{
+
+        font-size:26px;
+
+    }
+
+}
+
+/* ==========================================================
+   ACCESSIBILITY
+========================================================== */
+
+button:focus-visible{
+
+    outline:3px solid rgba(33,150,243,.35);
+
+    outline-offset:5px;
+
+}
+
+/* ==========================================================
+   TEXT SELECTION
+========================================================== */
+
+::selection{
+
+    background:var(--primary);
+
+    color:#ffffff;
+
+}
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+/* ==========================================================
+   END
+========================================================== */
