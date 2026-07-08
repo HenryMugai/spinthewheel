@@ -53,7 +53,7 @@ const DEFAULT_PRIZES = [
         textColor: "#FFFFFF",
         image: "assets/images/prizes/bucket_hat.png",
         enabled: true,
-        type: "retry"
+        type: "win"
     },
         
     {
@@ -75,7 +75,7 @@ const DEFAULT_PRIZES = [
         textColor: "#111111",
         image: "assets/images/prizes/try_again.png",
         enabled: true,
-        type: "win"
+        type: "retry"
     }
 
 ];
