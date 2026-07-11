@@ -265,38 +265,6 @@ function drawSlice(prize,index){
 
         start + sliceAngle;
 
-    const gradient = ctx.createRadialGradient(
-
-        0,
-
-        0,
-
-        radius * 0.15,
-
-        0,
-
-        0,
-
-        radius
-
-    );
-
-    gradient.addColorStop(
-
-        0,
-
-        "#FFFFFF"
-
-    );
-
-    gradient.addColorStop(
-
-        1,
-
-        prize.color
-
-    );
-
     ctx.beginPath();
 
     ctx.moveTo(
@@ -323,15 +291,35 @@ function drawSlice(prize,index){
 
     ctx.closePath();
 
-    ctx.fillStyle = gradient;
+    /*
+    ---------------------------------------
+    SOLID COLOUR
+    ---------------------------------------
+    */
+
+    ctx.fillStyle =
+
+        prize.color;
 
     ctx.fill();
+
+    /*
+    ---------------------------------------
+    SLICE BORDER
+    ---------------------------------------
+    */
 
     ctx.lineWidth = 2;
 
     ctx.strokeStyle = "#FFFFFF";
 
     ctx.stroke();
+
+    /*
+    ---------------------------------------
+    DRAW PRIZE
+    ---------------------------------------
+    */
 
     drawPrizeContent(
 
@@ -342,6 +330,10 @@ function drawSlice(prize,index){
     );
 
 }
+
+
+
+
 
 /* ==========================================================
    DRAW PRIZE CONTENT

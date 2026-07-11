@@ -14,7 +14,7 @@ const DEFAULT_PRIZES = [
     {
         id:1,
         name:"Bucket Hat",
-        chance:10,
+        chance:5,
         color:"#FFE100",
         textColor:"#C62828",
         image:"assets/images/prizes/bucket_hat.png",
@@ -47,7 +47,7 @@ const DEFAULT_PRIZES = [
     {
         id:4,
         name:"T-Shirt",
-        chance:10,
+        chance:5,
         color:"#FFE100",
         textColor:"#C62828",
         image:"assets/images/prizes/tshirt.png",
@@ -58,7 +58,7 @@ const DEFAULT_PRIZES = [
     {
         id:5,
         name:"Chaser",
-        chance:10,
+        chance:5,
         color:"#43A047",
         textColor:"#FFFFFF",
         image:"assets/images/prizes/chaser.png",
@@ -69,7 +69,7 @@ const DEFAULT_PRIZES = [
     {
         id:6,
         name:"Try Again",
-        chance:30,
+        chance:45,
         color:"#E31E24",
         textColor:"#FFFFFF",
         image:"assets/images/prizes/try_again.png",
