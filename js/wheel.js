@@ -359,7 +359,21 @@ function drawPrizeContent(prize,angle){
 
     );
 
-    if(img && img.complete){
+    /*
+    ---------------------------------------
+    Draw image only if it loaded correctly
+    ---------------------------------------
+    */
+
+    if(
+
+        img &&
+
+        img.complete &&
+
+        img.naturalWidth > 0
+
+    ){
 
         ctx.drawImage(
 
@@ -376,6 +390,12 @@ function drawPrizeContent(prize,angle){
         );
 
     }
+
+    /*
+    ---------------------------------------
+    Draw Prize Name
+    ---------------------------------------
+    */
 
     ctx.translate(
 

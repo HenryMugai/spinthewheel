@@ -11,71 +11,70 @@
 
 const DEFAULT_PRIZES = [
 
-
     {
-        id: 1,
-        name: "Unlucky",
-        chance: 15,
-        color: "#EF5350",
-        textColor: "#FFFFFF",
-        image: "assets/images/prizes/unlucky.png",
-        enabled: true,
-        type: "lose"
+        id:1,
+        name:"Bucket Hat",
+        chance:10,
+        color:"#FFE100",
+        textColor:"#C62828",
+        image:"assets/images/prizes/bucket_hat.png",
+        enabled:true,
+        type:"win"
     },
 
     {
-        id: 2,
-        name: "Hydrate",
-        chance: 20,
-        color: "#42A5F5",
-        textColor: "#FFFFFF",
-        image: "assets/images/prizes/hydrate.png",
-        enabled: true,
-        type: "win"
+        id:2,
+        name:"KES 100 Airtime",
+        chance:10,
+        color:"#43A047",
+        textColor:"#FFFFFF",
+        image:"assets/images/prizes/credit.png",
+        enabled:true,
+        type:"win"
     },
 
     {
-        id: 3,
-        name: "Unlucky",
-        chance: 15,
-        color: "#E53935",
-        textColor: "#FFFFFF",
-        image: "assets/images/prizes/unlucky.png",
-        enabled: true,
-        type: "lose"
+        id:3,
+        name:"Try Again",
+        chance:30,
+        color:"#E31E24",
+        textColor:"#FFFFFF",
+        image:"assets/images/prizes/try_again.png",
+        enabled:true,
+        type:"retry"
     },
 
     {
-        id: 4,
-        name: "Bucket Hat",
-        chance: 15,
-        color: "#FB8C00",
-        textColor: "#FFFFFF",
-        image: "assets/images/prizes/bucket_hat.png",
-        enabled: true,
-        type: "win"
-    },
-        
-    {
-        id: 5,
-        name: "T-Shirt",
-        chance: 10,
-        color: "#66BB6A",
-        textColor: "#FFFFFF",
-        image: "assets/images/prizes/tshirt.png",
-        enabled: true,
-        type: "win"
+        id:4,
+        name:"T-Shirt",
+        chance:10,
+        color:"#FFE100",
+        textColor:"#C62828",
+        image:"assets/images/prizes/tshirt.png",
+        enabled:true,
+        type:"win"
     },
 
     {
-        id: 6,
-        name: "Try Again",
-        chance: 10,
-        color: "#FFD54F",
-        textColor: "#111111",
-        image: "assets/images/prizes/try_again.png",
-        enabled: true,
-        type: "retry"
+        id:5,
+        name:"Chaser",
+        chance:10,
+        color:"#43A047",
+        textColor:"#FFFFFF",
+        image:"assets/images/prizes/chaser.png",
+        enabled:true,
+        type:"win"
+    },
+
+    {
+        id:6,
+        name:"Try Again",
+        chance:30,
+        color:"#E31E24",
+        textColor:"#FFFFFF",
+        image:"assets/images/prizes/try_again.png",
+        enabled:true,
+        type:"retry"
     }
 
 ];
