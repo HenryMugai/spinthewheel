@@ -2,7 +2,8 @@
    SPIN2WIN - KIBAO EDITION
    wheel.js
 
-   SECTION 1 : Engine + Renderer
+   PART 1A
+   ENGINE + GLOBALS + IMAGE LOADER + RESPONSIVE RESIZE
 ========================================================== */
 
 "use strict";
@@ -14,17 +15,38 @@
 let wheelCanvas = null;
 let ctx = null;
 
+/* Canvas size */
+
 let wheelSize = 500;
+
+/* Renderer scale */
+
+let renderScale = 1;
+
+/* Centre */
 
 let centerX = 250;
 let centerY = 250;
 
-let radius = 210;
+/* Main wheel radius */
+
+let radius = 220;
+
+/* Safe drawing radius (keeps artwork inside slices) */
+
+let safeRadius = 200;
+
+/* Device pixel ratio */
+
+let pixelRatio = 1;
+
+/* Rotation */
 
 let wheelRotation = 0;
 
-let spinning = false;
+/* Animation */
 
+let spinning = false;
 let animationFrame = null;
 
 /* ==========================================================
@@ -32,10 +54,15 @@ let animationFrame = null;
 ========================================================== */
 
 let prizes = [];
-
 let sliceAngle = 0;
 
+/* ==========================================================
+   IMAGE CACHE
+========================================================== */
+
 const imageCache = new Map();
+
+let hubLogo = null;
 
 /* ==========================================================
    IMAGE LOADER
@@ -43,11 +70,7 @@ const imageCache = new Map();
 
 function loadImage(src){
 
-    if(!src){
-
-        return null;
-
-    }
+    if(!src) return null;
 
     if(imageCache.has(src)){
 
@@ -57,27 +80,59 @@ function loadImage(src){
 
     const img = new Image();
 
+    img.decoding = "async";
+
+    img.loading = "eager";
+
     img.src = src;
 
-    img.onload = function(){
+    img.onload = () => {
 
         if(ctx){
 
-            drawWheel();
+            redrawWheel();
 
         }
 
     };
 
-    img.onerror = function(){
+    img.onerror = () => {
 
-        console.warn("Unable to load image:",src);
+        console.warn("Unable to load image:", src);
 
     };
 
     imageCache.set(src,img);
 
     return img;
+
+}
+
+/* ==========================================================
+   HUB LOGO
+========================================================== */
+
+function loadHubLogo(){
+
+    if(hubLogo){
+
+        return hubLogo;
+
+    }
+
+    hubLogo = new Image();
+
+    hubLogo.decoding = "async";
+
+    hubLogo.src = "assets/images/logo/logo.png";
+
+    hubLogo.onload = () => {
+
+        redrawWheel();
+
+    };
+
+    return hubLogo;
 
 }
 
@@ -95,7 +150,7 @@ function refreshWheelData(){
 
     }
 
-    if(prizes.length === 0){
+    if(prizes.length===0){
 
         sliceAngle = 0;
 
@@ -114,12 +169,12 @@ function refreshWheelData(){
 }
 
 /* ==========================================================
-   RESIZE
+   RESPONSIVE RESIZE
 ========================================================== */
 
 function resizeWheel(){
 
-    if(!wheelCanvas){
+    if(!wheelCanvas || !ctx){
 
         return;
 
@@ -127,21 +182,65 @@ function resizeWheel(){
 
     const wrapper = wheelCanvas.parentElement;
 
+    if(!wrapper){
+
+        return;
+
+    }
+
+    const wrapperWidth = wrapper.clientWidth;
+
+    const wrapperHeight = wrapper.clientHeight;
+
+    /*
+    --------------------------------------------------------
+    Responsive wheel size
+
+    Desktop : up to 620px
+
+    Tablet  : scales naturally
+
+    Mobile  : leaves breathing room
+    --------------------------------------------------------
+    */
+
     wheelSize = Math.min(
 
-        wrapper.clientWidth,
+        wrapperWidth,
 
-        wrapper.clientHeight,
+        wrapperHeight,
 
-        600
+        620
 
     );
 
-    const dpr = window.devicePixelRatio || 1;
+    wheelSize = Math.max(
 
-    wheelCanvas.width = wheelSize * dpr;
+        wheelSize,
 
-    wheelCanvas.height = wheelSize * dpr;
+        280
+
+    );
+
+    pixelRatio = Math.max(
+
+        window.devicePixelRatio || 1,
+
+        1
+
+    );
+
+    wheelCanvas.width = Math.round(
+
+        wheelSize * pixelRatio
+
+    );
+
+    wheelCanvas.height = Math.round(
+
+        wheelSize * pixelRatio
+
+    );
 
     wheelCanvas.style.width = wheelSize + "px";
 
@@ -149,13 +248,13 @@ function resizeWheel(){
 
     ctx.setTransform(
 
-        dpr,
+        pixelRatio,
 
         0,
 
         0,
 
-        dpr,
+        pixelRatio,
 
         0,
 
@@ -163,15 +262,53 @@ function resizeWheel(){
 
     );
 
+    ctx.imageSmoothingEnabled = true;
+
+    ctx.imageSmoothingQuality = "high";
+
     centerX = wheelSize / 2;
 
     centerY = wheelSize / 2;
 
-    radius = wheelSize * 0.46;
+    /*
+    --------------------------------------------------------
+    Version 3 renderer sizing
+    --------------------------------------------------------
+    */
+
+    renderScale = wheelSize / 500;
+
+    radius = wheelSize * 0.44;
+
+    safeRadius = radius * 0.88;
+
+    /*
+    --------------------------------------------------------
+    Preload assets
+    --------------------------------------------------------
+    */
+
+    loadHubLogo();
+
+    redrawWheel();
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ==========================================================
+   PART 1B
    DRAW COMPLETE WHEEL
 ========================================================== */
 
@@ -197,11 +334,25 @@ function drawWheel(){
 
     );
 
-    if(prizes.length === 0){
+    if(prizes.length===0){
 
         return;
 
     }
+
+    /*
+    --------------------------------------------------------
+    Wheel shadow
+    --------------------------------------------------------
+    */
+
+    drawWheelShadow();
+
+    /*
+    --------------------------------------------------------
+    Rotate wheel
+    --------------------------------------------------------
+    */
 
     ctx.save();
 
@@ -223,6 +374,12 @@ function drawWheel(){
 
     ctx.restore();
 
+    /*
+    --------------------------------------------------------
+    Static components
+    --------------------------------------------------------
+    */
+
     drawOuterRing();
 
     drawCenterHub();
@@ -237,17 +394,31 @@ function drawWheel(){
 
 function drawSlices(){
 
-    prizes.forEach(function(prize,index){
+    if(!prizes.length){
+
+        return;
+
+    }
+
+    for(
+
+        let i = 0;
+
+        i < prizes.length;
+
+        i++
+
+    ){
 
         drawSlice(
 
-            prize,
+            prizes[i],
 
-            index
+            i
 
         );
 
-    });
+    }
 
 }
 
@@ -255,15 +426,31 @@ function drawSlices(){
    DRAW SINGLE SLICE
 ========================================================== */
 
-function drawSlice(prize,index){
+function drawSlice(
 
-    const start =
+    prize,
 
-        index * sliceAngle - Math.PI / 2;
+    index
 
-    const end =
+){
 
-        start + sliceAngle;
+    const startAngle =
+
+        (index * sliceAngle) -
+
+        Math.PI / 2;
+
+    const endAngle =
+
+        startAngle +
+
+        sliceAngle;
+
+    /*
+    --------------------------------------------------------
+    Slice Body
+    --------------------------------------------------------
+    */
 
     ctx.beginPath();
 
@@ -283,49 +470,177 @@ function drawSlice(prize,index){
 
         radius,
 
-        start,
+        startAngle,
 
-        end
+        endAngle
 
     );
 
     ctx.closePath();
 
-    /*
-    ---------------------------------------
-    SOLID COLOUR
-    ---------------------------------------
-    */
-
     ctx.fillStyle =
 
-        prize.color;
+        prize.color ||
+
+        "#DDDDDD";
 
     ctx.fill();
 
     /*
-    ---------------------------------------
-    SLICE BORDER
-    ---------------------------------------
+    --------------------------------------------------------
+    Subtle glossy overlay
+    --------------------------------------------------------
     */
 
-    ctx.lineWidth = 2;
+    ctx.save();
 
-    ctx.strokeStyle = "#FFFFFF";
+    ctx.clip();
+
+    const gloss =
+
+        ctx.createLinearGradient(
+
+            0,
+
+            -radius,
+
+            0,
+
+            radius
+
+        );
+
+    gloss.addColorStop(
+
+        0,
+
+        "rgba(255,255,255,.30)"
+
+    );
+
+    gloss.addColorStop(
+
+        .35,
+
+        "rgba(255,255,255,.08)"
+
+    );
+
+    gloss.addColorStop(
+
+        1,
+
+        "rgba(0,0,0,.10)"
+
+    );
+
+    ctx.fillStyle = gloss;
+
+    ctx.fillRect(
+
+        -radius,
+
+        -radius,
+
+        radius * 2,
+
+        radius * 2
+
+    );
+
+    ctx.restore();
+
+    /*
+    --------------------------------------------------------
+    White separator
+    --------------------------------------------------------
+    */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+
+        0,
+
+        0
+
+    );
+
+    ctx.lineTo(
+
+        Math.cos(startAngle) * radius,
+
+        Math.sin(startAngle) * radius
+
+    );
+
+    ctx.lineWidth =
+
+        Math.max(
+
+            2,
+
+            radius * 0.009
+
+        );
+
+    ctx.strokeStyle =
+
+        "rgba(255,255,255,.95)";
 
     ctx.stroke();
 
     /*
-    ---------------------------------------
-    DRAW PRIZE
-    ---------------------------------------
+    --------------------------------------------------------
+    Gold edge
+    --------------------------------------------------------
+    */
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        0,
+
+        0,
+
+        radius - 1,
+
+        startAngle,
+
+        endAngle
+
+    );
+
+    ctx.lineWidth =
+
+        Math.max(
+
+            1,
+
+            radius * 0.005
+
+        );
+
+    ctx.strokeStyle =
+
+        "rgba(255,215,0,.45)";
+
+    ctx.stroke();
+
+    /*
+    --------------------------------------------------------
+    Prize Renderer
+    --------------------------------------------------------
     */
 
     drawPrizeContent(
 
         prize,
 
-        start + sliceAngle / 2
+        startAngle +
+
+        (sliceAngle / 2)
 
     );
 
@@ -335,95 +650,420 @@ function drawSlice(prize,index){
 
 
 
+
+
+
+
 /* ==========================================================
-   DRAW PRIZE CONTENT
+   PART 1C
+   VERSION 3 PRIZE RENDERER
 ========================================================== */
 
-function drawPrizeContent(prize,angle){
+function drawPrizeContent(prize, angle){
 
     ctx.save();
 
     ctx.rotate(angle);
 
-    const img = imageCache.get(
+    const img = imageCache.get(prize.image);
 
-        prize.image
+    /* ------------------------------------------------------
+       RESPONSIVE SCALE
+    ------------------------------------------------------ */
 
-    );
+    const scale = renderScale;
 
-    /*
-    ---------------------------------------
-    Draw image only if it loaded correctly
-    ---------------------------------------
-    */
+    /* ------------------------------------------------------
+       LAYOUT ENGINE
+    ------------------------------------------------------ */
+
+    const layout = {
+
+        image:{
+
+            enabled:true,
+
+            radius:0.49,
+
+            size:radius * 0.22,
+
+            rotation:0,
+
+            offsetY:0
+
+        },
+
+        text:{
+
+            radius:0.77,
+
+            rotation:Math.PI/2,
+
+            offsetY:0,
+
+            font:Math.max(14,18*scale),
+
+            lineHeight:20*scale,
+
+            color:prize.textColor || "#222",
+
+            weight:"700",
+
+            lines:[prize.name]
+
+        }
+
+    };
+
+    /* ------------------------------------------------------
+       HELPERS
+    ------------------------------------------------------ */
+
+    function hideImage(){
+
+        layout.image.enabled=false;
+
+    }
+
+    function setImage(radiusPercent,sizePercent,offsetY=0,rotation=0){
+
+        layout.image.radius=radiusPercent;
+
+        layout.image.size=radius*sizePercent;
+
+        layout.image.offsetY=offsetY*scale;
+
+        layout.image.rotation=rotation;
+
+    }
+
+    function setText(lines,fontSize){
+
+        layout.text.lines=lines;
+
+        layout.text.font=Math.max(
+
+            13,
+
+            fontSize*scale
+
+        );
+
+        layout.text.lineHeight=
+
+            layout.text.font*0.96;
+
+    }
+
+    function setTextPosition(radiusPercent,offsetY=0){
+
+        layout.text.radius=radiusPercent;
+
+        layout.text.offsetY=offsetY*scale;
+
+    }
+
+    /* ------------------------------------------------------
+       PRIZE LAYOUTS
+    ------------------------------------------------------ */
+
+    switch(prize.name){
+
+        case "KES 100 Airtime":
+
+            hideImage();
+
+            setText(
+
+                [
+
+                    "FREE 100/-",
+
+                    "SAFARICOM",
+
+                    "AIRTIME"
+
+                ],
+
+                18
+
+            );
+
+            setTextPosition(
+
+                0.64
+
+            );
+
+            break;
+
+        case "Try Again":
+
+            hideImage();
+
+            setText(
+
+                [
+
+                    "TRY",
+
+                    "AGAIN"
+
+                ],
+
+                21
+
+            );
+
+            setTextPosition(
+
+                0.66
+
+            );
+
+            break;
+
+        case "Bucket Hat":
+
+            setImage(
+
+                0.47,
+
+                0.18,
+
+                -8
+
+            );
+
+            setText(
+
+                [
+
+                    "BUCKET",
+
+                    "HAT"
+
+                ],
+
+                17
+
+            );
+
+            setTextPosition(
+
+                0.77,
+
+                12
+
+            );
+
+            break;
+
+        case "T-Shirt":
+
+            setImage(
+
+                0.47,
+
+                0.19,
+
+                -6
+
+            );
+
+            setText(
+
+                [
+
+                    "T-SHIRT"
+
+                ],
+
+                18
+
+            );
+
+            setTextPosition(
+
+                0.77,
+
+                12
+
+            );
+
+            break;
+
+        case "Chaser":
+
+            setImage(
+
+                0.47,
+
+                0.18,
+
+                -6
+
+            );
+
+            setText(
+
+                [
+
+                    "CHASER"
+
+                ],
+
+                18
+
+            );
+
+            setTextPosition(
+
+                0.77,
+
+                12
+
+            );
+
+            break;
+
+    }
+
+    /* ------------------------------------------------------
+       DRAW IMAGE
+    ------------------------------------------------------ */
 
     if(
 
+        layout.image.enabled &&
+
         img &&
 
-        img.complete &&
-
-        img.naturalWidth > 0
+        img.complete
 
     ){
+
+        ctx.save();
+
+        ctx.translate(
+
+            radius*layout.image.radius,
+
+            layout.image.offsetY
+
+        );
+
+        ctx.rotate(
+
+            layout.image.rotation
+
+        );
+
+        ctx.shadowColor=
+
+            "rgba(0,0,0,.18)";
+
+        ctx.shadowBlur=
+
+            radius*0.025;
 
         ctx.drawImage(
 
             img,
 
-            radius * 0.48,
+            -layout.image.size/2,
 
-            -20,
+            -layout.image.size/2,
 
-            40,
+            layout.image.size,
 
-            40
+            layout.image.size
 
         );
 
+        ctx.restore();
+
     }
 
-    /*
-    ---------------------------------------
-    Draw Prize Name
-    ---------------------------------------
-    */
+    /* ------------------------------------------------------
+       DRAW TEXT
+    ------------------------------------------------------ */
+
+    ctx.save();
 
     ctx.translate(
 
-        radius * 0.78,
+        radius*layout.text.radius,
 
-        0
+        layout.text.offsetY
 
     );
 
     ctx.rotate(
 
-        Math.PI / 2
+        layout.text.rotation
 
     );
 
-    ctx.fillStyle =
+    ctx.fillStyle=
 
-        prize.textColor || "#111111";
+        layout.text.color;
 
-    ctx.font =
+    ctx.font=
 
-        `600 ${Math.max(13,wheelSize*0.03)}px Poppins`;
+        `${layout.text.weight} ${layout.text.font}px Poppins`;
 
-    ctx.textAlign = "center";
+    ctx.textAlign="center";
 
-    ctx.textBaseline = "middle";
+    ctx.textBaseline="middle";
 
-    ctx.fillText(
+    ctx.lineJoin="round";
 
-        prize.name,
+    ctx.strokeStyle="rgba(255,255,255,.20)";
 
-        0,
+    ctx.lineWidth=1;
 
-        0
+    const totalHeight=
+
+        (layout.text.lines.length-1)*
+
+        layout.text.lineHeight;
+
+    layout.text.lines.forEach(
+
+        function(line,index){
+
+            const y=
+
+                (index*layout.text.lineHeight)-
+
+                (totalHeight/2);
+
+            ctx.strokeText(
+
+                line,
+
+                0,
+
+                y
+
+            );
+
+            ctx.fillText(
+
+                line,
+
+                0,
+
+                y
+
+            );
+
+        }
 
     );
+
+    ctx.restore();
 
     ctx.restore();
 
@@ -435,6 +1075,788 @@ function drawPrizeContent(prize,angle){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================
+   PART 1C
+   VERSION 3 PRIZE RENDERER
+========================================================== */
+
+function drawPrizeContent(prize, angle){
+
+    ctx.save();
+
+    ctx.rotate(angle);
+
+    const img = imageCache.get(prize.image);
+
+    /* ------------------------------------------------------
+       RESPONSIVE SCALE
+    ------------------------------------------------------ */
+
+    const scale = renderScale;
+
+    /* ------------------------------------------------------
+       LAYOUT ENGINE
+    ------------------------------------------------------ */
+
+    const layout = {
+
+        image:{
+
+            enabled:true,
+
+            radius:0.49,
+
+            size:radius * 0.22,
+
+            rotation:0,
+
+            offsetY:0
+
+        },
+
+        text:{
+
+            radius:0.77,
+
+            rotation:Math.PI/2,
+
+            offsetY:0,
+
+            font:Math.max(14,18*scale),
+
+            lineHeight:20*scale,
+
+            color:prize.textColor || "#222",
+
+            weight:"700",
+
+            lines:[prize.name]
+
+        }
+
+    };
+
+    /* ------------------------------------------------------
+       HELPERS
+    ------------------------------------------------------ */
+
+    function hideImage(){
+
+        layout.image.enabled=false;
+
+    }
+
+    function setImage(radiusPercent,sizePercent,offsetY=0,rotation=0){
+
+        layout.image.radius=radiusPercent;
+
+        layout.image.size=radius*sizePercent;
+
+        layout.image.offsetY=offsetY*scale;
+
+        layout.image.rotation=rotation;
+
+    }
+
+    function setText(lines,fontSize){
+
+        layout.text.lines=lines;
+
+        layout.text.font=Math.max(
+
+            13,
+
+            fontSize*scale
+
+        );
+
+        layout.text.lineHeight=
+
+            layout.text.font*0.96;
+
+    }
+
+    function setTextPosition(radiusPercent,offsetY=0){
+
+        layout.text.radius=radiusPercent;
+
+        layout.text.offsetY=offsetY*scale;
+
+    }
+
+    /* ------------------------------------------------------
+       PRIZE LAYOUTS
+    ------------------------------------------------------ */
+
+    switch(prize.name){
+
+        case "KES 100 Airtime":
+
+            hideImage();
+
+            setText(
+
+                [
+
+                    "FREE 100/-",
+
+                    "SAFARICOM",
+
+                    "AIRTIME"
+
+                ],
+
+                18
+
+            );
+
+            setTextPosition(
+
+                0.64
+
+            );
+
+            break;
+
+        case "Try Again":
+
+            hideImage();
+
+            setText(
+
+                [
+
+                    "TRY",
+
+                    "AGAIN"
+
+                ],
+
+                21
+
+            );
+
+            setTextPosition(
+
+                0.66
+
+            );
+
+            break;
+
+        case "Bucket Hat":
+
+            setImage(
+
+                0.47,
+
+                0.18,
+
+                -8
+
+            );
+
+            setText(
+
+                [
+
+                    "BUCKET",
+
+                    "HAT"
+
+                ],
+
+                17
+
+            );
+
+            setTextPosition(
+
+                0.77,
+
+                12
+
+            );
+
+            break;
+
+        case "T-Shirt":
+
+            setImage(
+
+                0.47,
+
+                0.19,
+
+                -6
+
+            );
+
+            setText(
+
+                [
+
+                    "T-SHIRT"
+
+                ],
+
+                18
+
+            );
+
+            setTextPosition(
+
+                0.77,
+
+                12
+
+            );
+
+            break;
+
+        case "Chaser":
+
+            setImage(
+
+                0.47,
+
+                0.18,
+
+                -6
+
+            );
+
+            setText(
+
+                [
+
+                    "CHASER"
+
+                ],
+
+                18
+
+            );
+
+            setTextPosition(
+
+                0.77,
+
+                12
+
+            );
+
+            break;
+
+    }
+
+    /* ------------------------------------------------------
+       DRAW IMAGE
+    ------------------------------------------------------ */
+
+    if(
+
+        layout.image.enabled &&
+
+        img &&
+
+        img.complete
+
+    ){
+
+        ctx.save();
+
+        ctx.translate(
+
+            radius*layout.image.radius,
+
+            layout.image.offsetY
+
+        );
+
+        ctx.rotate(
+
+            layout.image.rotation
+
+        );
+
+        ctx.shadowColor=
+
+            "rgba(0,0,0,.18)";
+
+        ctx.shadowBlur=
+
+            radius*0.025;
+
+        ctx.drawImage(
+
+            img,
+
+            -layout.image.size/2,
+
+            -layout.image.size/2,
+
+            layout.image.size,
+
+            layout.image.size
+
+        );
+
+        ctx.restore();
+
+    }
+
+    /* ------------------------------------------------------
+       DRAW TEXT
+    ------------------------------------------------------ */
+
+    ctx.save();
+
+    ctx.translate(
+
+        radius*layout.text.radius,
+
+        layout.text.offsetY
+
+    );
+
+    ctx.rotate(
+
+        layout.text.rotation
+
+    );
+
+    ctx.fillStyle=
+
+        layout.text.color;
+
+    ctx.font=
+
+        `${layout.text.weight} ${layout.text.font}px Poppins`;
+
+    ctx.textAlign="center";
+
+    ctx.textBaseline="middle";
+
+    ctx.lineJoin="round";
+
+    ctx.strokeStyle="rgba(255,255,255,.20)";
+
+    ctx.lineWidth=1;
+
+    const totalHeight=
+
+        (layout.text.lines.length-1)*
+
+        layout.text.lineHeight;
+
+    layout.text.lines.forEach(
+
+        function(line,index){
+
+            const y=
+
+                (index*layout.text.lineHeight)-
+
+                (totalHeight/2);
+
+            ctx.strokeText(
+
+                line,
+
+                0,
+
+                y
+
+            );
+
+            ctx.fillText(
+
+                line,
+
+                0,
+
+                y
+
+            );
+
+        }
+
+    );
+
+    ctx.restore();
+
+    ctx.restore();
+
+}
+
+
+
+
+
+
+
+
+/* ==========================================================
+   PART 1D
+   VERSION 3
+   OUTER RING + CENTER HUB
+========================================================== */
+
+/* ==========================================================
+   OUTER RING
+========================================================== */
+
+function drawOuterRing(){
+
+    const outerRadius = radius + (radius * 0.045);
+
+    /*
+    ----------------------------------------------------------
+    Shadow
+    ----------------------------------------------------------
+    */
+
+    ctx.save();
+
+    ctx.shadowColor = "rgba(0,0,0,.30)";
+
+    ctx.shadowBlur = radius * 0.08;
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        centerX,
+
+        centerY,
+
+        outerRadius,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.fillStyle = "#C69214";
+
+    ctx.fill();
+
+    ctx.restore();
+
+    /*
+    ----------------------------------------------------------
+    Gold Gradient Ring
+    ----------------------------------------------------------
+    */
+
+    const gold = ctx.createRadialGradient(
+
+        centerX,
+
+        centerY,
+
+        outerRadius * 0.75,
+
+        centerX,
+
+        centerY,
+
+        outerRadius
+
+    );
+
+    gold.addColorStop(0,"#FFF7B2");
+    gold.addColorStop(.18,"#F6DA6C");
+    gold.addColorStop(.45,"#D4A92F");
+    gold.addColorStop(.75,"#A66D08");
+    gold.addColorStop(1,"#6B4300");
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        centerX,
+
+        centerY,
+
+        outerRadius,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.lineWidth = radius * 0.07;
+
+    ctx.strokeStyle = gold;
+
+    ctx.stroke();
+
+    /*
+    ----------------------------------------------------------
+    Inner Highlight
+    ----------------------------------------------------------
+    */
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        centerX,
+
+        centerY,
+
+        outerRadius - radius * 0.03,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.lineWidth = 2;
+
+    ctx.strokeStyle = "rgba(255,255,255,.55)";
+
+    ctx.stroke();
+
+}
+
+/* ==========================================================
+   CENTER HUB
+========================================================== */
+
+function drawCenterHub(){
+
+    /*
+    ----------------------------------------------------------
+    Smaller hub than Version 2
+    ----------------------------------------------------------
+    */
+
+    const hubRadius = radius * 0.21;
+
+    /*
+    ----------------------------------------------------------
+    Shadow
+    ----------------------------------------------------------
+    */
+
+    ctx.save();
+
+    ctx.shadowColor = "rgba(0,0,0,.30)";
+
+    ctx.shadowBlur = radius * 0.06;
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        centerX,
+
+        centerY,
+
+        hubRadius,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.fillStyle = "#7A5107";
+
+    ctx.fill();
+
+    ctx.restore();
+
+    /*
+    ----------------------------------------------------------
+    Metallic Face
+    ----------------------------------------------------------
+    */
+
+    const face = ctx.createRadialGradient(
+
+        centerX,
+
+        centerY,
+
+        hubRadius * 0.20,
+
+        centerX,
+
+        centerY,
+
+        hubRadius
+
+    );
+
+    face.addColorStop(0,"#FFFCE5");
+    face.addColorStop(.30,"#F8E189");
+    face.addColorStop(.70,"#D2A52A");
+    face.addColorStop(1,"#9B6907");
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        centerX,
+
+        centerY,
+
+        hubRadius,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.fillStyle = face;
+
+    ctx.fill();
+
+    /*
+    ----------------------------------------------------------
+    Outer Ring
+    ----------------------------------------------------------
+    */
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        centerX,
+
+        centerY,
+
+        hubRadius,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.lineWidth = radius * 0.015;
+
+    ctx.strokeStyle = "#FFFFFF";
+
+    ctx.stroke();
+
+    /*
+    ----------------------------------------------------------
+    Inner Ring
+    ----------------------------------------------------------
+    */
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        centerX,
+
+        centerY,
+
+        hubRadius * 0.84,
+
+        0,
+
+        Math.PI * 2
+
+    );
+
+    ctx.lineWidth = radius * 0.01;
+
+    ctx.strokeStyle = "rgba(255,255,255,.45)";
+
+    ctx.stroke();
+
+    /*
+    ----------------------------------------------------------
+    Logo
+    ----------------------------------------------------------
+    */
+
+    if(
+
+        hubLogo &&
+
+        hubLogo.complete
+
+    ){
+
+        const logoSize = hubRadius * 1.30;
+
+        ctx.drawImage(
+
+            hubLogo,
+
+            centerX - logoSize / 2,
+
+            centerY - logoSize / 2,
+
+            logoSize,
+
+            logoSize
+
+        );
+
+    }
+
+    /*
+    ----------------------------------------------------------
+    Glass Reflection
+    ----------------------------------------------------------
+    */
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        centerX,
+
+        centerY,
+
+        hubRadius * 0.72,
+
+        Math.PI * 1.05,
+
+        Math.PI * 1.85
+
+    );
+
+    ctx.lineWidth = radius * 0.012;
+
+    ctx.strokeStyle = "rgba(255,255,255,.35)";
+
+    ctx.stroke();
+
+}
 
 
 

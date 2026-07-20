@@ -1145,31 +1145,41 @@ button,
 
     .wheel-wrapper{
 
-        width:88vw;
+        width:min(84vw,420px);
 
-        height:88vw;
+        height:min(84vw,420px);
+
+    }
+
+    canvas{
+
+        width:100% !important;
+
+        height:100% !important;
 
     }
 
     .pointer{
 
-        font-size:42px;
+        font-size:36px;
 
     }
 
     .logo img{
 
-        height:42px;
+        height:40px;
 
     }
 
     #spinBtn{
 
-        width:90vw;
+        width:88vw;
 
         max-width:260px;
 
-        font-size:17px;
+        font-size:16px;
+
+        padding:15px 20px;
 
     }
 
@@ -1177,29 +1187,29 @@ button,
 
         width:92%;
 
-        padding:30px 25px;
+        padding:28px 22px;
 
     }
 
     .popup-icon{
 
-        width:80px;
+        width:75px;
 
-        height:80px;
+        height:75px;
 
-        font-size:40px;
+        font-size:38px;
 
     }
 
     .popup-card h2{
 
-        font-size:26px;
+        font-size:24px;
 
     }
 
     #winnerName{
 
-        font-size:28px;
+        font-size:26px;
 
     }
 
@@ -1213,35 +1223,37 @@ button,
 
     .wheel-wrapper{
 
-        width:82vw;
+        width:min(80vw,320px);
 
-        height:82vw;
+        height:min(80vw,320px);
 
     }
 
     .pointer{
 
-        font-size:34px;
+        font-size:30px;
 
     }
 
     .logo img{
 
-        height:36px;
+        height:34px;
 
     }
 
     #spinBtn{
 
-        width:230px;
+        width:210px;
 
-        font-size:16px;
+        font-size:15px;
+
+        padding:14px 18px;
 
     }
 
     footer{
 
-        font-size:12px;
+        font-size:11px;
 
     }
 

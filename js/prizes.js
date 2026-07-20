@@ -13,19 +13,8 @@ const DEFAULT_PRIZES = [
 
     {
         id:1,
-        name:"Bucket Hat",
-        chance:5,
-        color:"#FFE100",
-        textColor:"#C62828",
-        image:"assets/images/prizes/bucket_hat.png",
-        enabled:true,
-        type:"win"
-    },
-
-    {
-        id:2,
         name:"KES 100 Airtime",
-        chance:10,
+        chance:8,
         color:"#43A047",
         textColor:"#FFFFFF",
         image:"assets/images/prizes/credit.png",
@@ -34,9 +23,9 @@ const DEFAULT_PRIZES = [
     },
 
     {
-        id:3,
+        id:2,
         name:"Try Again",
-        chance:30,
+        chance:24,
         color:"#E31E24",
         textColor:"#FFFFFF",
         image:"assets/images/prizes/try_again.png",
@@ -45,7 +34,7 @@ const DEFAULT_PRIZES = [
     },
 
     {
-        id:4,
+        id:3,
         name:"T-Shirt",
         chance:5,
         color:"#FFE100",
@@ -56,7 +45,7 @@ const DEFAULT_PRIZES = [
     },
 
     {
-        id:5,
+        id:4,
         name:"Chaser",
         chance:5,
         color:"#43A047",
@@ -67,9 +56,42 @@ const DEFAULT_PRIZES = [
     },
 
     {
-        id:6,
+        id:5,
         name:"Try Again",
-        chance:45,
+        chance:24,
+        color:"#E31E24",
+        textColor:"#FFFFFF",
+        image:"assets/images/prizes/try_again.png",
+        enabled:true,
+        type:"retry"
+    },
+
+    {
+        id:6,
+        name:"Bucket Hat",
+        chance:5,
+        color:"#FFE100",
+        textColor:"#C62828",
+        image:"assets/images/prizes/bucket_hat.png",
+        enabled:true,
+        type:"win"
+    },
+
+    {
+        id:7,
+        name:"KES 100 Airtime",
+        chance:8,
+        color:"#43A047",
+        textColor:"#FFFFFF",
+        image:"assets/images/prizes/credit.png",
+        enabled:true,
+        type:"win"
+    },
+
+    {
+        id:8,
+        name:"Try Again",
+        chance:21,
         color:"#E31E24",
         textColor:"#FFFFFF",
         image:"assets/images/prizes/try_again.png",
